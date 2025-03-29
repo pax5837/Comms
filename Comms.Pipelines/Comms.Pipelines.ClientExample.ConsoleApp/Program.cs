@@ -5,25 +5,22 @@ var client = PipeFactoryProvider.GetPipeFactoryInstance().GetPipeClient(
     message => Console.WriteLine(message),
     () => Console.WriteLine("Disconnected"));
 
-var t = new TaskFactory().StartNew(() =>
+
+var doRun = true;
+while (doRun)
 {
-    var doRun = true;
-    while (doRun)
+    Console.WriteLine("Enter message or 'x' to exit");
+    var input = Console.ReadLine();
+
+    if (input.Equals("x", StringComparison.OrdinalIgnoreCase))
     {
-        Console.WriteLine("Enter message or 'x' to exit");
-        var input = Console.ReadLine();
-
-        if (input.Equals("x", StringComparison.OrdinalIgnoreCase))
-        {
-            doRun = false;
-        }
-
-        if (!string.IsNullOrWhiteSpace(input))
-        {
-            client.Send(input);
-        }
+        doRun = false;
     }
-});
-t.Wait();
+
+    if (!string.IsNullOrWhiteSpace(input))
+    {
+        client.Send(input);
+    }
+}
 
 client.Disconnect();
