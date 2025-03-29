@@ -1,0 +1,15 @@
+﻿<Solution>
+  <Folder Name="/Pipelines/">
+    <Project Path="Comms.Pipelines\Comms.Pipelines.Contracts\Comms.Pipelines.Contracts.csproj" Type="Classic C#" />
+    <Project Path="Comms.Pipelines\Comms.Pipelines\Comms.Pipelines.csproj" Type="Classic C#" />
+  </Folder>
+  <Folder Name="/Pipelines/Example/">
+    <Project Path="Comms.Pipelines\Comms.Pipelines.ClientExample.ConsoleApp\Comms.Pipelines.ClientExample.ConsoleApp.csproj" Type="Classic C#" />
+    <Project Path="Comms.Pipelines\Comms.Pipelines.ServerExample.ConsoleApp\Comms.Pipelines.ServerExample.ConsoleApp.csproj" Type="Classic C#" />
+  </Folder>
+  <Folder Name="/_SolutionItems/">
+    <File Path="README.md" />
+    <File Path=".gitignore" />
+    <File Path=".editorconfig" />
+  </Folder>
+</Solution>
