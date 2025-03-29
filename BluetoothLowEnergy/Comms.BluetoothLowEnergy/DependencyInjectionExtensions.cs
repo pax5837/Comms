@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Comms.BluetoothLowEnergy;
 
-public static class DependencyInjectionRegistrationExtensions
+public static class DependencyInjectionExtensions
 {
     public static IServiceCollection AddBleServices(this IServiceCollection services)
     {

@@ -4,7 +4,7 @@ namespace Comms.BluetoothLowEnergy.Contracts;
 
 public interface IBleWatcher
 {
-    void StartWatching(Guid[] serviceIdFilter, TimeSpan duration);
+    void StartWatching(IImmutableSet<Guid> serviceIdFilter);
 
     void StopWatching();
 

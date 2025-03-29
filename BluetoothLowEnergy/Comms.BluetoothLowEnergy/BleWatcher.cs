@@ -10,7 +10,7 @@ internal class BleWatcher : IBleWatcher
     private readonly ILogger<BleWatcher> logger;
     private readonly BluetoothLEAdvertisementWatcher watcher;
 
-    private Guid[]? serviceIdFilter;
+    private IImmutableSet<Guid>? serviceIdFilter;
     private bool isWatching;
 
     private readonly IDictionary<ulong, BluetoothLEAdvertisement> advertisementByBluetoothAddress =
@@ -26,7 +26,7 @@ internal class BleWatcher : IBleWatcher
         watcher.Received += WatcherOnReceived;
     }
 
-    public void StartWatching(Guid[] serviceIdFilter, TimeSpan duration)
+    public void StartWatching(IImmutableSet<Guid> serviceIdFilter)
     {
         isWatching = true;
         this.serviceIdFilter = serviceIdFilter;

@@ -27,6 +27,4 @@ internal class BleCharacteristicCollection : IBleCharacteristicCollection
     {
         return (IBleCharacteristic<T>)chars[typeof(T)].Invoke(characteristicsByGuid[id]);
     }
-
-
 }
