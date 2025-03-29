@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net9.0-windows10.0.19041.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Comms.BluetoothLowEnergy.Contracts\Comms.BluetoothLowEnergy.Contracts.csproj" />
+      <ProjectReference Include="..\Comms.BluetoothLowEnergy\Comms.BluetoothLowEnergy.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.3" />
+    </ItemGroup>
+
+</Project>

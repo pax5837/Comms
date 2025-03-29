@@ -1,4 +1,11 @@
 ﻿<Solution>
+  <Folder Name="/BluetoothLowEnergy/">
+    <Project Path="BluetoothLowEnergy\Comms.BluetoothLowEnergy.Contracts\Comms.BluetoothLowEnergy.Contracts.csproj" Type="Classic C#" />
+    <Project Path="BluetoothLowEnergy\Comms.BluetoothLowEnergy\Comms.BluetoothLowEnergy.csproj" Type="Classic C#" />
+  </Folder>
+  <Folder Name="/BluetoothLowEnergy/Example/">
+    <Project Path="BluetoothLowEnergy\Comms.BluetoothLowEnergy.Example.ConsoleApp\Comms.BluetoothLowEnergy.Example.ConsoleApp.csproj" Type="Classic C#" />
+  </Folder>
   <Folder Name="/Pipelines/">
     <Project Path="Comms.Pipelines\Comms.Pipelines.Contracts\Comms.Pipelines.Contracts.csproj" Type="Classic C#" />
     <Project Path="Comms.Pipelines\Comms.Pipelines\Comms.Pipelines.csproj" Type="Classic C#" />
