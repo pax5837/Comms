@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.IO.Pipes;
+using System.Threading;
 using System.Threading.Tasks;
 using Comms.Pipelines.Contracts;
 
@@ -10,31 +11,37 @@ internal class PipeServer : IPipeServer, IDisposable
 {
     private readonly string pipeName;
     private NamedPipeServerStream? pipeServerStream;
-    private bool doRun;
     private StreamReader pipeReader;
     private StreamWriter pipeWriter;
     private bool isConnected;
+    CancellationTokenSource cancellationTokenSource;
 
-    public EventHandler<string> OnMessageReceived { get; set; }
-
-    public PipeServer(string pipeName, Action<string>? onMessageReceived, Action? onDisconnected)
+    public PipeServer(string pipeName, Action<string>? onMessageReceived, Action? onConnected, Action? onDisconnected)
     {
         this.pipeName = pipeName;
 
 
-        doRun = true;
-        Task.Factory.StartNew(() => RunServer(onMessageReceived, onDisconnected));
+        cancellationTokenSource = new CancellationTokenSource();
+        Task.Factory.StartNew(() => RunServer(onMessageReceived, onConnected, onDisconnected, cancellationTokenSource.Token));
     }
 
-    private void RunServer(Action<string>? onMessageReceived, Action? onDisconnected)
+    private void RunServer(
+        Action<string>? onMessageReceived,
+        Action? onConnected,
+        Action? onDisconnected,
+        CancellationToken cancellationToken)
     {
-        while (doRun)
+        while (!cancellationToken.IsCancellationRequested)
         {
-            OpenConnection(onMessageReceived, onDisconnected);
+            OpenConnection(onMessageReceived, onConnected, onDisconnected, cancellationToken);
         }
     }
 
-    private void OpenConnection(Action<string>? onMessageReceived, Action? onDisconnected)
+    private void OpenConnection(
+        Action<string>? onMessageReceived,
+        Action? onConnected,
+        Action? onDisconnected,
+        CancellationToken cancellationToken)
     {
         try
         {
@@ -48,17 +55,16 @@ internal class PipeServer : IPipeServer, IDisposable
 
             pipeServerStream = new NamedPipeServerStream(pipeName, PipeDirection.InOut, 2, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
             pipeServerStream.WaitForConnection();
-            Console.WriteLine("connected");
+            onConnected?.Invoke();
             pipeReader = new StreamReader(pipeServerStream);
             pipeWriter = new StreamWriter(pipeServerStream);
             isConnected = true;
-            while (pipeServerStream.IsConnected && doRun)
+            while (pipeServerStream.IsConnected && !cancellationToken.IsCancellationRequested)
             {
                 var line = pipeReader.ReadLine();
                 if (!string.IsNullOrWhiteSpace(line))
                 {
                     onMessageReceived?.Invoke(line);
-                    OnMessageReceived?.Invoke(this, line);
                 }
             }
         }
@@ -69,7 +75,7 @@ internal class PipeServer : IPipeServer, IDisposable
         finally
         {
             isConnected = false;
-            if (!doRun)
+            if (cancellationTokenSource.IsCancellationRequested)
             {
                 onDisconnected?.Invoke();
             }
@@ -95,17 +101,45 @@ internal class PipeServer : IPipeServer, IDisposable
 
     public void Disconnect()
     {
-        doRun = false;
-        pipeServerStream?.Disconnect();
-        pipeServerStream?.Dispose();
+        cancellationTokenSource.Cancel();
+        try
+        {
+            pipeServerStream?.Disconnect();
+        }
+        catch (Exception)
+        { }
+
+        try
+        {
+            pipeServerStream?.Dispose();
+        }
+        catch (Exception )
+        { }
         pipeServerStream = null;
     }
 
     public void Dispose()
     {
         Disconnect();
-        pipeReader.Dispose();
-        pipeWriter.Dispose();
-        pipeServerStream.Dispose();
+        try
+        {
+            pipeReader.Dispose();
+        }
+        catch (Exception )
+        { }
+
+        try
+        {
+            pipeWriter.Dispose();
+        }
+        catch (Exception)
+        { }
+
+        try
+        {
+            pipeServerStream?.Dispose();
+        }
+        catch (Exception)
+        { }
     }
 }

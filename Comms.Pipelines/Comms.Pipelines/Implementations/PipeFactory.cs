@@ -5,13 +5,13 @@ namespace Comms.Pipelines.Implementations;
 
 internal class PipeFactory : IPipeFactory
 {
-    public IPipeClient GetPipeClient(string pipeName, Action<string> onMessageReceived, Action? onDisconnected)
+    public IPipeClient GetPipeClient(string pipeName, Action<string> onMessageReceived, Action? onConnected, Action? onDisconnected)
     {
-        return new PipeClient(pipeName, onMessageReceived, onDisconnected);
+        return new PipeClient(pipeName, onMessageReceived, onConnected, onDisconnected);
     }
 
-    public IPipeServer GetPipeServer(string pipeName, Action<string> onMessageReceived, Action? onDisconnected)
+    public IPipeServer GetPipeServer(string pipeName, Action<string> onMessageReceived, Action? onConnected, Action? onDisconnected)
     {
-        return new PipeServer(pipeName, onMessageReceived, onDisconnected);
+        return new PipeServer(pipeName, onMessageReceived, onConnected, onDisconnected);
     }
 }

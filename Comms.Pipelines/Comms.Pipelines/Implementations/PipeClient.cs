@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.IO.Pipes;
+using System.Threading;
 using System.Threading.Tasks;
 using Comms.Pipelines.Contracts;
 
@@ -12,28 +13,32 @@ internal class PipeClient : IPipeClient, IDisposable
     private StreamWriter pipeWriter;
     private readonly NamedPipeClientStream client;
     private bool isConnected;
-    private bool doRun;
+    private CancellationTokenSource cancellationTokenSource;
 
-    public PipeClient(string pipeName, Action<string> onMessageReceived, Action? onDisconnected)
+    public PipeClient(
+        string pipeName,
+        Action<string> onMessageReceived,
+        Action? onConnected,
+        Action? onDisconnected)
     {
         client = new NamedPipeClientStream(".", pipeName, PipeDirection.InOut, PipeOptions.Asynchronous);
 
-        doRun = true;
-        Task.Factory.StartNew(() => RunClient(onMessageReceived, onDisconnected));
+        cancellationTokenSource = new CancellationTokenSource();
+        Task.Factory.StartNew(() => RunClient(onMessageReceived, onConnected, onDisconnected, cancellationTokenSource.Token));
     }
 
-    private void RunClient(Action<string> onMessageReceived, Action? onDisconnected)
+    private void RunClient(Action<string> onMessageReceived, Action? onConnected, Action? onDisconnected, CancellationToken cancellationToken)
     {
         try
         {
-            while (doRun)
+            while (!cancellationToken.IsCancellationRequested)
             {
                 client.Connect();
-                Console.WriteLine("connected");
+                onConnected?.Invoke();
                 pipeReader = new StreamReader(client);
                 pipeWriter = new StreamWriter(client);
                 isConnected = true;
-                while (client.IsConnected && doRun)
+                while (client.IsConnected && !cancellationToken.IsCancellationRequested)
                 {
                     var line = pipeReader.ReadLine();
                     if (!string.IsNullOrWhiteSpace(line))
@@ -50,7 +55,7 @@ internal class PipeClient : IPipeClient, IDisposable
         finally
         {
             isConnected = false;
-            if (!doRun)
+            if (cancellationToken.IsCancellationRequested)
             {
                 onDisconnected?.Invoke();
             }
@@ -79,17 +84,25 @@ internal class PipeClient : IPipeClient, IDisposable
 
     public void Disconnect()
     {
-        doRun = false;
-        // server.Disconnect();
-        pipeReader.Close();
-        pipeWriter.Close();
+        cancellationTokenSource.Cancel();
+        try
+        {
+            pipeReader.Close();
+        }
+        catch (Exception)
+        { }
+
+        try
+        {
+            pipeWriter.Close();
+        }
+        catch (Exception )
+        { }
     }
 
     public void Dispose()
     {
         Disconnect();
-        pipeReader.Dispose();
-        pipeWriter.Dispose();
         client.Dispose();
     }
 }
