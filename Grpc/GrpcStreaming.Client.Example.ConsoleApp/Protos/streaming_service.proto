@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option csharp_namespace = "Streamy";
+
+package stream;
+
+service StreamingService {
+
+  rpc StreamedRequest (stream Request) returns (Response);
+
+  rpc StreamedResponse (Request) returns (stream Response);
+
+  rpc BidirectionalStream (stream  Request) returns (stream Response);
+};
+
+message Request {
+	string message = 1;
+	int32 number = 2;
+}
+
+message Response {
+	string message = 1;
+}

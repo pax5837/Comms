@@ -6,6 +6,10 @@
   <Folder Name="/BluetoothLowEnergy/Example/">
     <Project Path="BluetoothLowEnergy\Comms.BluetoothLowEnergy.Example.ConsoleApp\Comms.BluetoothLowEnergy.Example.ConsoleApp.csproj" Type="Classic C#" />
   </Folder>
+  <Folder Name="/Crpc/">
+    <Project Path="GrpcStreaming.Server.Example.WebApp\GrpcStreaming.Server.Example.WebApp.csproj" Type="Classic C#" />
+    <Project Path="Grpc\GrpcStreaming.Client.Example.ConsoleApp\GrpcStreaming.Client.Example.ConsoleApp.csproj" Type="Classic C#" />
+  </Folder>
   <Folder Name="/Pipelines/">
     <Project Path="Comms.Pipelines\Comms.Pipelines.Contracts\Comms.Pipelines.Contracts.csproj" Type="Classic C#" />
     <Project Path="Comms.Pipelines\Comms.Pipelines\Comms.Pipelines.csproj" Type="Classic C#" />
